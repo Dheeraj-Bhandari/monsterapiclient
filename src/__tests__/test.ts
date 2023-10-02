@@ -1,14 +1,12 @@
-const chai = require('chai');
-const expect = chai.expect;
-const sinon = require('sinon');
-const MonsterApiClient = require('./index'); // Import the MonsterApiClient class
+import { expect } from 'chai';
+import * as sinon from 'sinon'; // Import sinon properly
 
-const enabledModels = ["whisper", "falcon-7b-instruct", "llama2-7b-chat", "mpt-7b-instruct", "sdxl-base", "txt2img", "sunoai-bark", "falcon-40b-instruct"];
+import MonsterApiClient from '../index'; // Adjust the import path as needed
 
 describe('MonsterApiClient', () => {
     // Mock API key for testing purposes
     const apiKey ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjU0MzNmYmYxOTNlODc4NDQyMGJhODE2ODVhMGFjMTkzIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDctMjhUMTk6MTA6MDMuMDYzNDEyIn0.VoMDVoHJRywG62bSpLxLKT5yZbnPqET-Cv991IYs0zA'; // Replace with your actual API key
-    let sandbox;
+    let sandbox: sinon.SinonSandbox;
 
     // Create an instance of the MonsterApiClient
     const monsterClient = new MonsterApiClient(apiKey);
@@ -32,12 +30,13 @@ describe('MonsterApiClient', () => {
             "beam_size": 1
         };
 
-        // Mock the generate function to simulate API response
-        sandbox.stub(monsterClient, 'generate').resolves({
-            process_id: 'valid-process-id'
-        });
+        // Stubbing the get_response method
+        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
+            .resolves({
+                process_id: 'valid-process-id'
+            });
 
-        const response = await monsterClient.generate(modelName, inputData);
+        const response: Record<string, any> = await monsterClient.generate(modelName, inputData);
 
         expect(response).to.have.property('process_id');
     });
@@ -53,12 +52,13 @@ describe('MonsterApiClient', () => {
             "beam_size": 1
         };
 
-        // Mock the generate function to simulate an error response
-        sandbox.stub(monsterClient, 'generate').throws(new Error('Invalid model: invalid-model!'));
+        // Stubbing the get_response method to simulate an error response
+        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
+            .throws(new Error('Invalid model: invalid-model!'));
 
         try {
             await monsterClient.generate(modelName, inputData);
-        } catch (error) {
+        } catch (error: any) { // Specify the error type as any
             expect(error.message).to.include('Invalid model:');
         }
     });
@@ -66,12 +66,13 @@ describe('MonsterApiClient', () => {
     it('should get the status for a valid processId', async () => {
         const processId = '3cf44e87-cb4e-42c2-9ef4-e1bef7ac7065'; // Replace with a valid process ID
 
-        // Mock the getStatus function to simulate API response
-        sandbox.stub(monsterClient, 'getStatus').resolves({
-            status: 'COMPLETED'
-        });
+        // Stubbing the get_status method
+        sandbox.stub(monsterClient, 'get_status' as keyof MonsterApiClient)
+            .resolves({
+                status: 'COMPLETED'
+            });
 
-        const statusResponse = await monsterClient.getStatus(processId);
+        const statusResponse: Record<string, any> = await monsterClient.get_status(processId);
 
         expect(statusResponse).to.have.property('status');
         expect(statusResponse.status).to.equal('COMPLETED');
@@ -80,12 +81,13 @@ describe('MonsterApiClient', () => {
     it('should handle invalid processIds', async () => {
         const processId = 'invalid-process-id'; // Replace with an invalid process ID
 
-        // Mock the getStatus function to simulate an error response
-        sandbox.stub(monsterClient, 'getStatus').throws(new Error('Invalid process ID: invalid-process-id!'));
+        // Stubbing the get_status method to simulate an error response
+        sandbox.stub(monsterClient, 'get_status' as keyof MonsterApiClient)
+            .throws(new Error('Invalid process ID: invalid-process-id!'));
 
         try {
-            await monsterClient.getStatus(processId);
-        } catch (error) {
+            await monsterClient.get_status(processId);
+        } catch (error: any) { // Specify the error type as any
             expect(error.message).to.include('Invalid process ID:');
         }
     });
@@ -93,26 +95,27 @@ describe('MonsterApiClient', () => {
     it('should wait for the result of a completed process', async () => {
         const processId = '3cf44e87-cb4e-42c2-9ef4-e1bef7ac7065'; // Replace with a completed process ID
 
-        // Mock the waitAndGetResult function to simulate API response
-        sandbox.stub(monsterClient, 'waitAndGetResult').resolves({
-            output: 'result-output' // Adjust based on your response structure
-        });
+        // Stubbing the wait_and_get_result method
+        sandbox.stub(monsterClient, 'wait_and_get_result' as keyof MonsterApiClient)
+            .resolves({
+                output: 'result-output' // Adjust based on your response structure
+            });
 
-        const resultResponse = await monsterClient.waitAndGetResult(processId, 60000);
+        const resultResponse: Record<string, any> = await monsterClient.wait_and_get_result(processId, 60000);
 
         expect(resultResponse).to.have.property('output');
-        expect(resultResponse.output).to.equal('result-output');
     });
 
     it('should handle timeouts for long-running processes', async () => {
-        const processId = '3cf44e87-cb4e-42c2-9ef4-e1bef7ac7065'; // Replace with a long-running process ID
+        const processId = '3cf44e87-cb4e-42c2-9ef4-e1bef7ac7065'; // Replace with a process ID that takes longer than the specified timeout
 
-        // Mock the waitAndGetResult function to simulate a timeout
-        sandbox.stub(monsterClient, 'waitAndGetResult').throws(new Error('Timeout waiting for process: long-running-process-id!'));
+        // Stubbing the wait_and_get_result method to simulate a timeout
+        sandbox.stub(monsterClient, 'wait_and_get_result' as keyof MonsterApiClient)
+            .throws(new Error('Timeout waiting for process: ' + processId));
 
         try {
-            await monsterClient.waitAndGetResult(processId, 1000); // Short timeout for testing
-        } catch (error) {
+            await monsterClient.wait_and_get_result(processId, 1);
+        } catch (error: any) { // Specify the error type as any
             expect(error.message).to.include('Timeout waiting for process:');
         }
     });

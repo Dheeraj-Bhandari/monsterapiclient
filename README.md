@@ -1,4 +1,3 @@
-Certainly! Below is a template for a `README.md` file that you can use for your `monsterapiclient` package. Feel free to customize it with your package's specific information and usage instructions.
 
 ```markdown
 # monsterapiclient
