@@ -6,7 +6,7 @@ import MonsterApiClient from '../index'; // Adjust the import path as needed
 
 describe('MonsterApiClient', () => {
     // Mock API key for testing purposes
-    const apiKey =process.env.MONSTER_API_KEY || ""; // Replace with your actual API key
+    const apiKey = process.env.MONSTER_API_KEY || ""; // Replace with your actual API key
     let sandbox: sinon.SinonSandbox;
 
     // Create an instance of the MonsterApiClient
