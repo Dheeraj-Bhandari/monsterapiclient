@@ -30,8 +30,8 @@ describe('MonsterApiClient', () => {
             "beam_size": 1
         };
 
-        // Stubbing the get_response method
-        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
+        // Stubbing the generate method
+        sandbox.stub(monsterClient, 'generate' as keyof MonsterApiClient)
             .resolves({
                 process_id: 'valid-process-id'
             });
@@ -52,8 +52,8 @@ describe('MonsterApiClient', () => {
             "beam_size": 1
         };
 
-        // Stubbing the get_response method to simulate an error response
-        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
+        // Stubbing the generate method to simulate an error response
+        sandbox.stub(monsterClient, 'generate' as keyof MonsterApiClient)
             .throws(new Error('Invalid model: invalid-model!'));
 
         try {

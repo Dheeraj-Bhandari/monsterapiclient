@@ -4,20 +4,17 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register src/__tests__/test.ts",
+    "test": "mocha --require ts-node/register dist/__tests__/**/*.js",
     "build": "tsc -p tsconfig.json",
     "build:test": "tsc -p tsconfig.test.json"
   },
-  
-  
-  
   "author": "dheeraj-bhandari",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.3.10",
     "dotenv": "^16.3.1",
     "mocha": "^10.2.0",
-    "node-fetch": "^3.3.2",
+    "node-fetch": "^2.6.5",
     "sinon": "^16.0.0",
     "uuid": "^9.0.1"
   },
