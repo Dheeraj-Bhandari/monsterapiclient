@@ -37,10 +37,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const sinon = __importStar(require("sinon")); // Import sinon properly
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
 const index_1 = __importDefault(require("../index")); // Adjust the import path as needed
 describe('MonsterApiClient', () => {
     // Mock API key for testing purposes
-    const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IjU0MzNmYmYxOTNlODc4NDQyMGJhODE2ODVhMGFjMTkzIiwiY3JlYXRlZF9hdCI6IjIwMjMtMDctMjhUMTk6MTA6MDMuMDYzNDEyIn0.VoMDVoHJRywG62bSpLxLKT5yZbnPqET-Cv991IYs0zA'; // Replace with your actual API key
+    const apiKey = process.env.MONSTER_API_KEY || ""; // Replace with your actual API key
     let sandbox;
     // Create an instance of the MonsterApiClient
     const monsterClient = new index_1.default(apiKey);
