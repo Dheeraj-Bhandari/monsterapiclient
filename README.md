@@ -1,31 +1,58 @@
 
-```markdown
-# monsterapiclient
 
-`monsterapiclient` is a JavaScript client library for interacting with the Monster API. It provides an easy way to access the API's features and integrate them into your applications.
+```markdown
+# monsterapi
+
+**monsterapi** is a JavaScript client library for interacting with the Monster API. It provides an easy way to access the API's features and integrate them into your applications.
 
 ## Installation
 
-You can install the `monsterapiclient` package using npm or yarn:
+You can install the `monsterapi` package using npm or yarn:
 
 ```bash
-npm install monsterapiclient
+npm install monsterapi
 ```
 
 or
 
 ```bash
-yarn add monsterapiclient
+yarn add monsterapi
 ```
+
+## Model Data
+
+### Available Models
+
+#### Text Generation / Language Models (LLMs):
+
+1. falcon-7b-instruct
+2. mpt-7b-instruct
+3. llama2-7b-chat
+4. falcon-40b-instruct
+5. mpt-30b-instruct
+
+**Note:** Other models are accessible through the client but are not activated yet. They will be updated shortly.
+
+#### Image Generation:
+
+1. txt2img - stable-diffusion v1.5
+2. sdxl - stable-diffusion XL V1.0
+3. pix2pix - Instruct-pix2pix
+4. img2img - Image to Image using Stable Diffusion
+
+#### Speech Generation:
+
+1. sunoai-bark - Bark (Sunoai Bark)
+2. whisper - Whisper Large V2
 
 ## Usage
 
 ### Import the Library
 
-To use the `monsterapiclient` library in your project, import the `MonsterApiClient` class:
+To use the **monsterapi** library in your project, import the `MonsterApiClient` class:
 
 ```javascript
-import  MonsterApiClient  from 'monsterapiclient';
+import MonsterApiClient from 'monsterapi';
 ```
 
 ### Initialize the Client
@@ -59,24 +86,48 @@ client.generate(model, input)
   });
 ```
 
-### Additional Methods
+### Check Status
 
-The `MonsterApiClient` class provides methods for generating content, checking status, and waiting for results. Refer to the library documentation for detailed usage instructions.
+You can use the `get_status` method to check the status of a content generation process:
+
+```javascript
+const processId = 'your-process-id'; // Replace with the actual process ID
+
+client.get_status(processId)
+  .then((status) => {
+    // Handle the status response from the API
+    console.log('Status:', status);
+  })
+  .catch((error) => {
+    // Handle API errors
+    console.error('Error:', error);
+  });
+```
+
+### Wait and Get Result
+
+You can use the `wait_and_get_result` method to wait for a content generation process to complete and retrieve the result:
+
+```javascript
+const processId = 'your-process-id'; // Replace with the actual process ID
+
+client.wait_and_get_result(processId)
+  .then((result) => {
+    // Handle the generated content result
+    console.log('Generated content result:', result);
+  })
+  .catch((error) => {
+    // Handle API errors or timeout
+    console.error('Error:', error);
+  });
+```
+
 
 ## Documentation
 
-For more details on the `monsterapiclient` library and its methods, refer to the [documentation](link-to-documentation).
+For more details on the **monsterapi** library and its methods, refer to the [documentation](https://developer.monsterapi.ai/reference/getting-started-1).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 ```
-
-In this template:
-
-- Replace `'your-api-key'` with the actual Monster API key required to authenticate requests.
-- Provide instructions on how to use the `MonsterApiClient` class to generate content and interact with the API.
-- Mention the availability of detailed documentation (if applicable) and provide a link.
-- Specify the license under which your package is distributed. You can replace "MIT License" with your preferred license if necessary.
-
-Remember to replace the placeholders with actual content and customize the README according to your package's specific features and requirements.

@@ -1,7 +1,9 @@
 {
-  "name": "monsterapiclient",
-  "version": "1.0.2",
-  "description": "",
+  "name": "monsterapi",
+  "version": "1.1.2",
+  "description": "monsterapi is a JavaScript client library for interacting with the Monster API. It provides an easy way to access the API's features and integrate them into your applications.",
+  "docs": "https://developer.monsterapi.ai/reference/getting-started-1",
+  "homepage": "https://monsterapi.ai",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --require ts-node/register dist/__tests__/**/*.js",
