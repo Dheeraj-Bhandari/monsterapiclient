@@ -151,7 +151,5 @@ client.generate(model, input)
 
 For more details on the **monsterapi** library and its methods, refer to the [documentation](https://developer.monsterapi.ai/reference/getting-started-1).
 
-## License
 
-This project is licensed under the MIT License.
-```
+
