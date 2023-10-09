@@ -32,12 +32,12 @@ describe('MonsterApiClient', () => {
         };
 
         // Stubbing the generate method
-        sandbox.stub(monsterClient, 'generate' as keyof MonsterApiClient)
+        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
             .resolves({
                 process_id: 'valid-process-id'
             });
 
-        const response: Record<string, any> = await monsterClient.generate(modelName, inputData);
+        const response: Record<string, any> = await monsterClient.get_response(modelName, inputData);
 
         expect(response).to.have.property('process_id');
     });
@@ -53,12 +53,12 @@ describe('MonsterApiClient', () => {
             "beam_size": 1
         };
 
-        // Stubbing the generate method to simulate an error response
-        sandbox.stub(monsterClient, 'generate' as keyof MonsterApiClient)
+        // Stubbing the get_response method to simulate an error response
+        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
             .throws(new Error('Invalid model: invalid-model!'));
 
         try {
-            await monsterClient.generate(modelName, inputData);
+            await monsterClient.get_response(modelName, inputData);
         } catch (error: any) { // Specify the error type as any
             expect(error.message).to.include('Invalid model:');
         }
@@ -119,5 +119,33 @@ describe('MonsterApiClient', () => {
         } catch (error: any) { // Specify the error type as any
             expect(error.message).to.include('Timeout waiting for process:');
         }
+    });
+
+    it('should generate content and retrieve the result for a valid model and data', async () => {
+        const modelName = 'falcon-7b-instruct'; // Replace with an actual model name
+        const inputData = {
+            "prompt": "Write an essay on Mars",
+            "top_k": 40,
+            "top_p": 0.8,
+            "max_length": 256,
+            "repitition_penalty": 1.2,
+            "beam_size": 1
+        };
+
+        // Stubbing the get_response method to simulate a successful response
+        sandbox.stub(monsterClient, 'get_response' as keyof MonsterApiClient)
+            .resolves({
+                process_id: 'valid-process-id'
+            });
+
+        // Stubbing the wait_and_get_result method to simulate a completed process
+        sandbox.stub(monsterClient, 'wait_and_get_result' as keyof MonsterApiClient)
+            .resolves({
+                output: 'result-output' // Adjust based on your response structure
+            });
+
+        const resultResponse: Record<string, any> = await monsterClient.generate(modelName, inputData);
+
+        expect(resultResponse).to.have.property('output');
     });
 });

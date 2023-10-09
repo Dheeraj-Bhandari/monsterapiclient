@@ -19,8 +19,6 @@ or
 yarn add monsterapi
 ```
 
-## Model Data
-
 ### Available Models
 
 #### Text Generation / Language Models (LLMs):
@@ -65,20 +63,21 @@ const client = new MonsterApiClient('your-api-key');
 
 Replace `'your-api-key'` with your actual Monster API key.
 
-### Generate Content
+### Get Response
 
-You can use the `generate` method to create content using the Monster API:
+You can use the `get_response` method to generate the process Id of your request:
 
 ```javascript
+
 const model = 'whisper'; // Replace with a valid model name
 const input = {
   // Replace with valid input data for the model
 };
 
-client.generate(model, input)
-  .then((response) => {
-    // Handle the response from the API
-    console.log('Generated content:', response);
+client.get_response(model, input)
+  .then((result) => {
+    // Handle the status response from the API
+    console.log('Generated Data:', result);
   })
   .catch((error) => {
     // Handle API errors
@@ -121,7 +120,26 @@ client.wait_and_get_result(processId)
     console.error('Error:', error);
   });
 ```
+### Generate Content
 
+You can use the `generate` method to create content using the Monster API:
+
+```javascript
+const model = 'whisper'; // Replace with a valid model name
+const input = {
+  // Replace with valid input data for the model
+};
+
+client.generate(model, input)
+  .then((response) => {
+    // Handle the response from the API
+    console.log('Generated content:', response);
+  })
+  .catch((error) => {
+    // Handle API errors
+    console.error('Error:', error);
+  });
+```
 
 ## Documentation
 
