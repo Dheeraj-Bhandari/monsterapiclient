@@ -111,7 +111,7 @@ client.get_status(processId)
 
 ### Wait and Get Result
 
-You can use the `wait_and_get_result` it take process id and wait till status get completed and retrieve the result:
+You can use the `wait_and_get_result` method it take process id and wait till status get completed and retrieve the result:
 
 ```javascript
 const processId = 'your-process-id'; // Replace with the actual process ID
@@ -128,7 +128,7 @@ client.wait_and_get_result(processId)
 ```
 ### Generate Content
 
-You can use the `generate` to retrive the result directly without using each function separately. `generate` method Generate the process Id and Retrive it Result :
+You can use the `generate` method to retrive the result directly without using each function separately. `generate` method Generate the process Id and Retrive it Result :
 
 ```javascript
 const model = 'whisper'; // Replace with a valid model name
