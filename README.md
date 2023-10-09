@@ -149,7 +149,7 @@ client.generate(model, input)
 
 ## Documentation
 
-For more details on the **monsterapi** library and its methods, refer to the [documentation](https://developer.monsterapi.ai/reference/getting-started-1).
+For more details on the **monsterapi** library and its models, refer to the [documentation](https://developer.monsterapi.ai/reference/getting-started-1).
 
 
 
