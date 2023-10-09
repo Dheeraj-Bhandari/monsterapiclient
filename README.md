@@ -1,23 +1,11 @@
 
 
-```markdown
+
 # monsterapi
 
 **monsterapi** is a JavaScript client library for interacting with the Monster API. It provides an easy way to access the API's features and integrate them into your applications.
 
-## Installation
 
-You can install the `monsterapi` package using npm or yarn:
-
-```bash
-npm install monsterapi
-```
-
-or
-
-```bash
-yarn add monsterapi
-```
 
 ### Available Models
 
@@ -45,6 +33,20 @@ yarn add monsterapi
 
 ## Usage
 
+## Installation
+
+You can install the `monsterapi` package using npm or yarn:
+
+```bash
+npm install monsterapi
+```
+
+or
+
+```bash
+yarn add monsterapi
+```
+
 ### Import the Library
 
 To use the **monsterapi** library in your project, import the `MonsterApiClient` class:
@@ -52,7 +54,11 @@ To use the **monsterapi** library in your project, import the `MonsterApiClient`
 ```javascript
 import MonsterApiClient from 'monsterapi';
 ```
+or
 
+```javascript
+const MonsterApiClient = require('monsterapi');
+```
 ### Initialize the Client
 
 Create an instance of the `MonsterApiClient` class by providing your API key:
@@ -65,7 +71,7 @@ Replace `'your-api-key'` with your actual Monster API key.
 
 ### Get Response
 
-You can use the `get_response` method to generate the process Id of your request:
+You can use the `get_response` method to generate the Process Id of your request:
 
 ```javascript
 
@@ -87,7 +93,7 @@ client.get_response(model, input)
 
 ### Check Status
 
-You can use the `get_status` method to check the status of a content generation process:
+You can use the `get_status` method to check the status of a Process Id:
 
 ```javascript
 const processId = 'your-process-id'; // Replace with the actual process ID
@@ -105,7 +111,7 @@ client.get_status(processId)
 
 ### Wait and Get Result
 
-You can use the `wait_and_get_result` method to wait for a content generation process to complete and retrieve the result:
+You can use the `wait_and_get_result` it take process id and wait till status get completed and retrieve the result:
 
 ```javascript
 const processId = 'your-process-id'; // Replace with the actual process ID
@@ -122,7 +128,7 @@ client.wait_and_get_result(processId)
 ```
 ### Generate Content
 
-You can use the `generate` method to create content using the Monster API:
+You can use the `generate` to retrive the result directly without using each function separately. `generate` method Generate the process Id and Retrive it Result :
 
 ```javascript
 const model = 'whisper'; // Replace with a valid model name
