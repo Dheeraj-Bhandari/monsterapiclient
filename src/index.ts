@@ -76,7 +76,6 @@ class MonsterApiClient {
   }
 
   // Generate Process Id and Get Result
-
   async generate(model: string, data: Record<string, any>): Promise<Record<string, any>> {
     try {
       // Step 1: Generate a process ID
@@ -91,8 +90,6 @@ class MonsterApiClient {
       throw new Error(`Error generating content: ${error.message}`);
     }
   }
-
-
 
 
 }

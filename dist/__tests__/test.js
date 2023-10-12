@@ -63,11 +63,11 @@ describe('MonsterApiClient', () => {
             "beam_size": 1
         };
         // Stubbing the generate method
-        sandbox.stub(monsterClient, 'generate')
+        sandbox.stub(monsterClient, 'get_response')
             .resolves({
             process_id: 'valid-process-id'
         });
-        const response = yield monsterClient.generate(modelName, inputData);
+        const response = yield monsterClient.get_response(modelName, inputData);
         (0, chai_1.expect)(response).to.have.property('process_id');
     }));
     it('should handle invalid models', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -80,11 +80,11 @@ describe('MonsterApiClient', () => {
             "repitition_penalty": 1.2,
             "beam_size": 1
         };
-        // Stubbing the generate method to simulate an error response
-        sandbox.stub(monsterClient, 'generate')
+        // Stubbing the get_response method to simulate an error response
+        sandbox.stub(monsterClient, 'get_response')
             .throws(new Error('Invalid model: invalid-model!'));
         try {
-            yield monsterClient.generate(modelName, inputData);
+            yield monsterClient.get_response(modelName, inputData);
         }
         catch (error) { // Specify the error type as any
             (0, chai_1.expect)(error.message).to.include('Invalid model:');
@@ -134,5 +134,28 @@ describe('MonsterApiClient', () => {
         catch (error) { // Specify the error type as any
             (0, chai_1.expect)(error.message).to.include('Timeout waiting for process:');
         }
+    }));
+    it('should generate content and retrieve the result for a valid model and data', () => __awaiter(void 0, void 0, void 0, function* () {
+        const modelName = 'falcon-7b-instruct'; // Replace with an actual model name
+        const inputData = {
+            "prompt": "Write an essay on Mars",
+            "top_k": 40,
+            "top_p": 0.8,
+            "max_length": 256,
+            "repitition_penalty": 1.2,
+            "beam_size": 1
+        };
+        // Stubbing the get_response method to simulate a successful response
+        sandbox.stub(monsterClient, 'get_response')
+            .resolves({
+            process_id: 'valid-process-id'
+        });
+        // Stubbing the wait_and_get_result method to simulate a completed process
+        sandbox.stub(monsterClient, 'wait_and_get_result')
+            .resolves({
+            output: 'result-output' // Adjust based on your response structure
+        });
+        const resultResponse = yield monsterClient.generate(modelName, inputData);
+        (0, chai_1.expect)(resultResponse).to.have.property('output');
     }));
 });

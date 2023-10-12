@@ -18,7 +18,8 @@ class MonsterApiClient {
         this.apiKey = apiKey;
         this.apiUrl = 'https://api.monsterapi.ai/v1'; // Replace with the actual API URL
     }
-    generate(model, data) {
+    // Generate Process Id
+    get_response(model, data) {
         return __awaiter(this, void 0, void 0, function* () {
             const url = `${this.apiUrl}/generate/${model}`;
             const headers = {
@@ -42,6 +43,7 @@ class MonsterApiClient {
             }
         });
     }
+    // Get Process Id Status
     get_status(processId) {
         return __awaiter(this, void 0, void 0, function* () {
             const url = `${this.apiUrl}/status/${processId}`;
@@ -64,6 +66,7 @@ class MonsterApiClient {
             }
         });
     }
+    // get result from Process Id
     wait_and_get_result(processId, timeout = 60) {
         return __awaiter(this, void 0, void 0, function* () {
             const startTime = Date.now();
@@ -80,6 +83,22 @@ class MonsterApiClient {
                 }
                 // Delay for a short time before checking the status again
                 yield new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        });
+    }
+    // Generate Process Id and Get Result
+    generate(model, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Step 1: Generate a process ID
+                const response = yield this.get_response(model, data);
+                const processId = response.processId;
+                // Step 2: Wait for the process to complete and get the result
+                const result = yield this.wait_and_get_result(processId);
+                return result;
+            }
+            catch (error) {
+                throw new Error(`Error generating content: ${error.message}`);
             }
         });
     }
