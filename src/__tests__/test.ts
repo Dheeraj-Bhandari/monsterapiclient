@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon'; // Import sinon properly
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 dotenv.config();
 import MonsterApiClient from '../index'; // Adjust the import path as needed
 
@@ -148,4 +149,41 @@ describe('MonsterApiClient', () => {
 
         expect(resultResponse).to.have.property('output');
     });
+
+    // test Case for uploadFile
+
+    it('should upload a file', async () => {
+        const modelName = 'img2img'; // Replace with an actual model name
+        const file = {
+            name: 'sample.jpg',
+            type: 'image/jpeg',
+            size: 5000000, // 5MB, within the 8MB limit
+        };
+
+        // Stubbing the fetch calls to simulate a successful upload
+        sandbox.stub(fs.promises, 'readFile').resolves(Buffer.from(new Uint8Array(0)));
+
+        // Explicitly specify the type for fetch stub
+        const fetchStub: sinon.SinonStub = sandbox.stub(require('node-fetch'), 'fetch').resolves({ ok: true });
+
+        const resultResponse: Record<string, any> = await monsterClient.uploadFile(modelName, file);
+
+        expect(resultResponse).to.have.property('fileUrl');
+    });
+
+    it('should reject the upload if the file size exceeds the limit', async () => {
+        const modelName = 'img2img'; // Replace with an actual model name
+        const file = {
+            name: 'large-file.jpg',
+            type: 'image/jpeg',
+            size: 9000000, // 9MB, exceeding the 8MB limit
+        };
+
+        try {
+            await monsterClient.uploadFile(modelName, file);
+        } catch (error: any) {
+            expect(error.message).to.include('File size exceeds the allowed limit');
+        }
+    });
+
 });

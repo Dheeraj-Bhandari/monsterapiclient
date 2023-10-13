@@ -147,6 +147,34 @@ client.generate(model, input)
   });
 ```
 
+### Generate Content
+
+Handle File Upload from you local computer to use `generate` and other method and retrive the result directly.
+
+```javascript
+const model = 'whisper'; // Replace with a valid model name
+const input = {
+  // Replace with valid input data for the model
+  file: uploadFile(model, file)
+};
+
+// Instead of Passing File link you can use `uploadFile` function and pass `model` and `file` in it. it will automatically upload file and replace it with link. 
+
+client.uploadFile(model, file)
+  .then((response) => {
+    // Handle the response from the API
+    console.log('Uploaded file:', response);
+  })
+  .catch((error) => {
+    // Handle API errors
+    console.error('Error:', error);
+  });
+  
+
+// Please note that all files uploaded via the uploadFile function are automatically removed from the database for privacy and security purposes.
+
+```
+
 ## Documentation
 
 For more details on the **monsterapi** library and its models, refer to the [documentation](https://developer.monsterapi.ai/reference/getting-started-1).

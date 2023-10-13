@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
-
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs').promises;
 class MonsterApiClient {
   constructor(private apiKey: string) {
     this.apiUrl = 'https://api.monsterapi.ai/v1'; // Replace with the actual API URL
@@ -91,6 +92,84 @@ class MonsterApiClient {
     }
   }
 
+  // Upload File
+  async uploadFile(model: string, file: Record<string, any>): Promise<Record<string, any>> {
+
+    const filename = file.name;
+    const filetype = file.type;
+
+    // Check if the file size is within the limit (8MB)
+    if (file.size > 8 * 1024 * 1024) {
+      return Promise.reject(new Error('File size exceeds the allowed limit (8MB)'));
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const generatedUuid = uuidv4();
+        const data = {
+          model,
+          filename,
+          filetype,
+          uuid: generatedUuid,
+        };
+
+        const url = 'https://alpha4.monsterapi.ai/backend/v2playground/get-presigned-url-playgroundv2';
+        const presignedUrlResponse = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!presignedUrlResponse.ok) {
+          reject(new Error(`Failed to get presigned URL: ${presignedUrlResponse.statusText}`));
+          return;
+        }
+
+        const result = await presignedUrlResponse.json();
+
+        try {
+          const binaryData = await fs.readFile(file);
+          const url = result.url;
+
+          const uploadResponse = await fetch(url, {
+            method: 'PUT',
+            body: binaryData,
+            headers: { 'Content-Type': 'application/octet-stream' },
+          });
+
+          if (!uploadResponse.ok) {
+            reject(new Error(`Failed to upload file: ${uploadResponse.statusText}`));
+            return;
+          }
+
+          const s3Url = `s3://qbfinetuningapigateway-s3uploadbucket-rkiyd0cpm7i0/${model}/${generatedUuid}_${filename}`;
+          const s3Data = {
+            s3Url,
+          };
+
+          const fileUrl = 'https://alpha4.monsterapi.ai/backend/v2playground/get-file-url-playgroundv2';
+          const fileUrlResponse = await fetch(fileUrl, {
+            method: 'POST',
+            body: JSON.stringify(s3Data),
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          if (!fileUrlResponse.ok) {
+            reject(new Error(`Failed to get file URL: ${fileUrlResponse.statusText}`));
+            return;
+          }
+
+          console.log('File uploaded successfully');
+          resolve(fileUrlResponse.json());
+        } catch (uploadError) {
+          reject(uploadError);
+        }
+      } catch (error) {
+        console.error('Error uploading file', error);
+        reject(error);
+      }
+    });
+  };
 
 }
 
