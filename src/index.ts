@@ -3,11 +3,12 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs').promises;
 class MonsterApiClient {
   constructor(private apiKey: string) {
-    this.apiUrl = 'https://api.monsterapi.ai/v1'; // Replace with the actual API URL
+    this.apiUrl = 'https://api.monsterapi.ai/v1';
   }
 
   private apiUrl: string;
 
+  
   // Generate Process Id
   async get_response(model: string, data: Record<string, any>): Promise<Record<string, any>> {
     const url = `${this.apiUrl}/generate/${model}`;
@@ -81,7 +82,7 @@ class MonsterApiClient {
     try {
       // Step 1: Generate a process ID
       const response = await this.get_response(model, data);
-      const processId = response.processId;
+      const processId = response.process_id;
 
       // Step 2: Wait for the process to complete and get the result
       const result = await this.wait_and_get_result(processId);

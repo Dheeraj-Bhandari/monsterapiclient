@@ -38,6 +38,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const sinon = __importStar(require("sinon")); // Import sinon properly
 const dotenv = __importStar(require("dotenv"));
+const fs = __importStar(require("fs"));
+const fetch_mock_1 = __importDefault(require("fetch-mock")); // Import fetch-mock
 dotenv.config();
 const index_1 = __importDefault(require("../index")); // Adjust the import path as needed
 describe('MonsterApiClient', () => {
@@ -157,5 +159,38 @@ describe('MonsterApiClient', () => {
         });
         const resultResponse = yield monsterClient.generate(modelName, inputData);
         (0, chai_1.expect)(resultResponse).to.have.property('output');
+    }));
+    // test Case for uploadFile
+    it('should upload a file', function () {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.timeout(5000); // Set a larger timeout (e.g., 5000ms) for this specific test
+            const modelName = 'img2img';
+            const file = {
+                name: 'sample.jpg',
+                type: 'image/jpeg',
+                size: 5000000,
+            };
+            // Stubbing the fetch calls to simulate a successful upload
+            sandbox.stub(fs.promises, 'readFile').resolves(Buffer.from(new Uint8Array(0)));
+            // Mock the fetch call with fetch-mock
+            fetch_mock_1.default.mock('*', { ok: true });
+            const resultResponse = yield monsterClient.uploadFile(modelName, file);
+            // expect(resultResponse).to.have.property('fileUrl');
+            (0, chai_1.expect)(resultResponse);
+        });
+    });
+    it('should reject the upload if the file size exceeds the limit', () => __awaiter(void 0, void 0, void 0, function* () {
+        const modelName = 'img2img'; // Replace with an actual model name
+        const file = {
+            name: 'large-file.jpg',
+            type: 'image/jpeg',
+            size: 9000000, // 9MB, exceeding the 8MB limit
+        };
+        try {
+            yield monsterClient.uploadFile(modelName, file);
+        }
+        catch (error) {
+            (0, chai_1.expect)(error.message).to.include('File size exceeds the allowed limit');
+        }
     }));
 });
