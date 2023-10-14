@@ -152,17 +152,21 @@ client.generate(model, input)
 Handle File Upload from you local computer to use `generate` and other method and retrive the result directly.
 
 ```javascript
+// Example for genrerating File Link and Using it in Model Object.
+
 const model = 'whisper'; // Replace with a valid model name
+
+const response = await client.uploadFile(model, selectedFile ) // Put model name selected file in `uploadFile Function`
+
 const input = {
   // Replace with valid input data for the model
 
-  // Upload File Directly in Model Input Object using `uploadFile` function. You need to pass `model` and `file` both the thing as function parameter.
-  file: uploadFile(model, file)
+ 
+  file: response.url // put the response url in place of file url.
 };
 
-// Instead of Passing File link you can use `uploadFile` function and pass `model` and `file` in it. it will automatically upload file and replace it with link. 
-
 // Below is Example for Using Function separately 
+
 client.uploadFile(model, file)
   .then((response) => {
     // Handle the response from the API

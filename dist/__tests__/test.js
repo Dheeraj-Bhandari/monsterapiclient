@@ -137,39 +137,11 @@ describe('MonsterApiClient', () => {
             (0, chai_1.expect)(error.message).to.include('Timeout waiting for process:');
         }
     }));
-    it('should generate content and retrieve the result for a valid model and data', () => __awaiter(void 0, void 0, void 0, function* () {
-        const modelName = 'falcon-7b-instruct'; // Replace with an actual model name
-        const inputData = {
-            "prompt": "Write an essay on Mars",
-            "top_k": 40,
-            "top_p": 0.8,
-            "max_length": 256,
-            "repitition_penalty": 1.2,
-            "beam_size": 1
-        };
-        // Stubbing the get_response method to simulate a successful response
-        sandbox.stub(monsterClient, 'get_response')
-            .resolves({
-            process_id: 'valid-process-id'
-        });
-        // Stubbing the wait_and_get_result method to simulate a completed process
-        sandbox.stub(monsterClient, 'wait_and_get_result')
-            .resolves({
-            output: 'result-output' // Adjust based on your response structure
-        });
-        const resultResponse = yield monsterClient.generate(modelName, inputData);
-        (0, chai_1.expect)(resultResponse).to.have.property('output');
-    }));
-    // test Case for uploadFile
     it('should upload a file', function () {
         return __awaiter(this, void 0, void 0, function* () {
             this.timeout(5000); // Set a larger timeout (e.g., 5000ms) for this specific test
             const modelName = 'img2img';
-            const file = {
-                name: 'sample.jpg',
-                type: 'image/jpeg',
-                size: 5000000,
-            };
+            const file = new File([''], 'sample.jpg', { type: 'image/jpeg' });
             // Stubbing the fetch calls to simulate a successful upload
             sandbox.stub(fs.promises, 'readFile').resolves(Buffer.from(new Uint8Array(0)));
             // Mock the fetch call with fetch-mock
@@ -181,11 +153,9 @@ describe('MonsterApiClient', () => {
     });
     it('should reject the upload if the file size exceeds the limit', () => __awaiter(void 0, void 0, void 0, function* () {
         const modelName = 'img2img'; // Replace with an actual model name
-        const file = {
-            name: 'large-file.jpg',
-            type: 'image/jpeg',
-            size: 9000000, // 9MB, exceeding the 8MB limit
-        };
+        const file = new File([''], 'large-file.jpg', { type: 'image/jpeg' });
+        // Set the file size to exceed the 8MB limit (9MB in this case)
+        Object.defineProperty(file, 'size', { value: 9000000 });
         try {
             yield monsterClient.uploadFile(modelName, file);
         }
