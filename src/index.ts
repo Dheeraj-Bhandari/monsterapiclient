@@ -1,4 +1,4 @@
-class MonsterApiClient {
+export class MonsterApiClient {
   constructor(private apiKey: string) {
       this.apiUrl = 'https://api.monsterapi.ai/v1';
   }
@@ -177,4 +177,3 @@ class MonsterApiClient {
   }
 }
 
-export default MonsterApiClient;

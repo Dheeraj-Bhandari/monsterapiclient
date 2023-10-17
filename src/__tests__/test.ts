@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import fetchMock from 'fetch-mock'; // Import fetch-mock
 dotenv.config();
 
-import MonsterApiClient from '../index'; // Adjust the import path as needed
+import { MonsterApiClient } from '../index'; // Adjust the import path as needed
 
 describe('MonsterApiClient', () => {
     // Mock API key for testing purposes

@@ -4,7 +4,41 @@
   "description": "monsterapi is a JavaScript client library for interacting with the Monster API. It provides an easy way to access the API's features and integrate them into your applications.",
   "documentation": "https://developer.monsterapi.ai/reference/getting-started-1",
   "homepage": "https://monsterapi.ai",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "mocha --require ts-node/register lib/__tests__/**/*.js",
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.json",
+    "build:test": "tsc -p tsconfig.test.json"
+  },
+  "author": "Dheeraj Bhandari <howtotech000@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/DheerajQblocks/monsterapiclient/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "node-fetch": "^2.7.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.6",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^16.18.55",
+    "@types/node-fetch": "^2.6.6",
+    "@types/sinon": "^10.0.17",
+    "@types/uuid": "^9.0.5",
+    "dotenv": "^16.3.1",
+    "fetch-mock": "^9.11.0",
+    "sinon": "^16.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "files": [
+    "lib/**/*"
+  ],
   "keywords": [
     "genai",
     "ai",
@@ -28,32 +62,5 @@
     "monsterai",
     "genrativeaiapi",
     "generativeAI"
-  ],
-  "scripts": {
-    "test": "mocha --require ts-node/register dist/__tests__/**/*.js",
-    "build": "tsc -p tsconfig.json",
-    "build:test": "tsc -p tsconfig.test.json"
-  },
-  "author": "dheeraj-bhandari",
-  "license": "ISC",
-  "dependencies": {
-    "chai": "^4.3.10",
-    "mocha": "^10.2.0",
-    "node-fetch": "^2.7.0",
-    "uuid": "^9.0.1"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.3.6",
-    "@types/mocha": "^10.0.2",
-    "@types/node": "^16.18.55",
-    "@types/node-fetch": "^2.6.6",
-    "@types/sinon": "^10.0.17",
-    "@types/uuid": "^9.0.5",
-    "dotenv": "^16.3.1",
-    "fetch-mock": "^9.11.0",
-    "sinon": "^16.1.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
-  },
-  "types": "dist/index.d.ts"
+  ]
 }
