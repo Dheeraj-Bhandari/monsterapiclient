@@ -52,12 +52,12 @@ yarn add monsterapi
 To use the **monsterapi** library in your project, import the `MonsterApiClient` class:
 
 ```javascript
-import MonsterApiClient from 'monsterapi';
+import { MonsterApiClient } from 'monsterapi';
 ```
 or
 
 ```javascript
-const MonsterApiClient = require('monsterapi');
+const { MonsterApiClient } = require('monsterapi');
 ```
 ### Initialize the Client
 
