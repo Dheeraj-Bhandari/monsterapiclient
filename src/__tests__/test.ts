@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon'; // Import sinon properly
 import * as dotenv from 'dotenv';
-import * as fs from 'fs';
 import fetchMock from 'fetch-mock'; // Import fetch-mock
 dotenv.config();
 
@@ -21,6 +20,7 @@ describe('MonsterApiClient', () => {
 
     afterEach(() => {
         sandbox.restore();
+        fetchMock.restore(); // Reset fetch-mock routes
     });
 
     it('should generate a response for a valid model and data', async () => {
@@ -124,36 +124,64 @@ describe('MonsterApiClient', () => {
         }
     });
 
-    it('should upload a file', async function () {
-        this.timeout(5000); // Set a larger timeout (e.g., 5000ms) for this specific test
-
-        const modelName = 'img2img';
-        const file = new File([''], 'sample.jpg', { type: 'image/jpeg' });
-
-        // Stubbing the fetch calls to simulate a successful upload
-        sandbox.stub(fs.promises, 'readFile').resolves(Buffer.from(new Uint8Array(0)));
-
-        // Mock the fetch call with fetch-mock
-        fetchMock.mock('*', { ok: true });
-
-        const resultResponse: Record<string, any> = await monsterClient.uploadFile(modelName, file);
-
-        // expect(resultResponse).to.have.property('fileUrl');
-        expect(resultResponse);
+    it('should successfully upload a file', async () => {
+        const filePath = 'dheeraj.png'; // Replace with the actual file path
+    
+        // Stubbing the necessary methods to simulate a successful file upload
+        (monsterClient as any).initNodeModules = sandbox.stub();
+        (monsterClient as any).isNodeEnvironment = sandbox.stub().returns(true);
+        (monsterClient as any).fs = sandbox.stub().returns({
+            readFileSync: () => Buffer.from('file contents'), // Replace with your file contents
+        });
+    
+        const uploadUrl = 'https://api.monsterapi.ai/v1/upload';
+        const downloadUrl = 'https://download-url-for-uploaded-file'; // Replace with your expected download URL
+    
+        // Mock the response from the file upload endpoint
+        fetchMock.put(uploadUrl, {
+            status: 200,
+            body: JSON.stringify({ download_url: downloadUrl }),
+        });
+    
+        // Remove the redefinition of `path` here to avoid conflicts
+        const result: string = await monsterClient.uploadFile(filePath);
+        
+        expect(result).to.equal(downloadUrl);
     });
 
+    it('should handle a failed file upload', async () => {
+        const filePath = 'dheeraj.png'; // Replace with the actual file path
 
-    it('should reject the upload if the file size exceeds the limit', async () => {
-        const modelName = 'img2img'; // Replace with an actual model name
-        const file = new File([''], 'large-file.jpg', { type: 'image/jpeg' });
+        // Stubbing the necessary methods to simulate a failed file upload
+        (monsterClient as any).initNodeModules = sandbox.stub();
+        (monsterClient as any).isNodeEnvironment = sandbox.stub().returns(true);
+        (monsterClient as any).fs = sandbox.stub().returns({
+            readFileSync: () => {
+                throw new Error('Failed to read file');
+            },
+        });
 
-        // Set the file size to exceed the 8MB limit (9MB in this case)
-        Object.defineProperty(file, 'size', { value: 9000000 });
+        // Stub path.basename to simulate its behavior
+        (monsterClient as any).path = sandbox.stub().returns({
+            basename: (filePath: string) => filePath.split('/').pop() || '',
+        });
+
+        const uploadUrl = 'https://api.monsterapi.ai/v1/upload';
+
+        // Mock the response from the file upload endpoint to simulate failure
+        fetchMock.post(uploadUrl, {
+            status: 500, // Simulate a failed request
+            body: JSON.stringify({ message: 'File upload failed' }),
+        });
 
         try {
-            await monsterClient.uploadFile(modelName, file);
+            await monsterClient.uploadFile(filePath);
         } catch (error: any) {
-            expect(error.message).to.include('File size exceeds the allowed limit');
+            expect(error.message).to.include('Error uploading file');
         }
     });
+
+
+
+
 });
