@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 export class MonsterApiClient {
     constructor(private apiKey: string) {
         this.apiUrl = 'https://api.monsterapi.ai/v1';
@@ -43,6 +43,7 @@ export class MonsterApiClient {
             this.path = require('path');
         }
     }
+
 
     async get_response(model: string, data: Record<string, any>): Promise<Record<string, any>> {
         const url = `${this.apiUrl}/generate/${model}`;
@@ -123,57 +124,69 @@ export class MonsterApiClient {
             throw new Error(`Error generating content: ${error.message}`);
         }
     }
-    async uploadFile(filePath: string): Promise<string> {
-        const url = 'https://api.monsterapi.ai/v1/upload';
-    
+
+    async uploadFile(filePath: string | File): Promise<string> {
+        this.initNodeModules();
+
+        const getUploadUrlUrl = 'https://api.monsterapi.ai/v1/upload';
         const headers = {
             accept: 'application/json',
             authorization: `Bearer ${this.apiKey}`,
         };
-    
+
         try {
-            this.initNodeModules(); // Initialize 'fs' and 'path' for Node.js
-    
-            let filename;
-    
-            if (this.isNodeEnvironment() && this.fs && this.path) {
-                filename = this.path.basename(filePath);
+            let filename: string;
+            let data: Buffer | ArrayBuffer;
+
+            if (this.isNodeEnvironment()) {
+                if (typeof filePath === 'string') {
+                    filename = filePath.split('/').pop() || ''; // Get the filename from the path
+                    data = this.fs.readFileSync(filePath); // Read file as Buffer for Node.js
+                } else {
+                    throw new Error('Invalid file path provided.');
+                }
             } else {
-                throw new Error('File upload is only supported in a Node.js environment.');
+                if (filePath instanceof File) {
+                    filename = filePath.name;
+                    data = await this.readFileAsArrayBuffer(filePath); // Read file as ArrayBuffer for the browser
+                } else {
+                    throw new Error('Invalid File object provided.');
+                }
             }
-    
+
             // Prepare the payload including the 'filename'
             const payload = {
                 filename,
             };
-    
-            // Send a GET request to get the upload URL and download URL
-            const get_file_urls = await axios.get(url, { headers, params: payload });
-    
-            // Extract the upload URL and download URL from the response
-            const { upload_url, download_url } = get_file_urls.data;
-    
-            // Read file content as binary data
-            const data = await this.readFileAsBuffer(filePath);
-    
-            // Create headers for the upload
-            const uploadHeaders = {
-                'Content-Type': 'application/octet-stream', // Content type for binary data
-            };
-    
-            // Upload the file using axios in Node.js
-            const uploadResponse = await axios.put(upload_url, data, {
-                headers: uploadHeaders,
+
+            // Use the Fetch API to perform the GET request to obtain upload_url and download_url
+            const getUrlsResponse = await fetch(`${getUploadUrlUrl}?filename=${filename}`, {
+                method: 'GET',
+                headers,
             });
-    
-            // Check if the file was successfully uploaded
-            if (uploadResponse.status === 200) {
+
+            if (!getUrlsResponse.ok) {
+                throw new Error(`Failed to obtain upload and download URLs: ${getUrlsResponse.status}`);
+            }
+
+            const { upload_url, download_url } = await getUrlsResponse.json();
+
+            // Create a Blob from the file data
+            const blob = new Blob([data], { type: 'application/octet-stream' });
+
+            // Use the Fetch API to perform the upload
+            const response = await fetch(upload_url, {
+                method: 'PUT',
+                body: blob,
+            });
+
+            if (response.ok) {
                 return download_url;
             } else {
                 throw new Error('Failed to upload file');
             }
         } catch (error: any) {
-            throw new Error(`Error uploading file: ${error.message}`);
+            throw Error(`Error uploading file: ${error.message}`);
         }
     }
 
@@ -194,27 +207,42 @@ export class MonsterApiClient {
         }
     }
 
-    private readFileAsArrayBuffer(filePath: string): Promise<ArrayBuffer> {
+    private readFileAsArrayBuffer(filePath: string | File): Promise<ArrayBuffer> {
         return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-                if (event.target && event.target.result) {
-                    resolve(event.target.result as ArrayBuffer);
+            if (typeof filePath === 'string') {
+                if (this.isNodeEnvironment() && this.fs) {
+                    // Read the file as a Buffer in Node.js
+                    this.fs.readFile(filePath, (err: any, data: any) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(data.buffer);
+                        }
+                    });
                 } else {
-                    reject(new Error('Failed to read file as ArrayBuffer'));
+                    reject(new Error('Cannot read file as a buffer in a browser environment'));
                 }
-            };
+            } else if (filePath instanceof File) {
+                const reader = new FileReader();
 
-            reader.onerror = (error) => {
-                reject(error);
-            };
+                reader.onload = (event) => {
+                    if (event.target && event.target.result) {
+                        resolve(event.target.result as ArrayBuffer);
+                    } else {
+                        reject(new Error('Failed to read file as ArrayBuffer'));
+                    }
+                };
 
-            const file = new Blob([filePath], { type: 'application/octet-stream' });
-            reader.readAsArrayBuffer(file);
+                reader.onerror = (error) => {
+                    reject(error);
+                };
+
+                reader.readAsArrayBuffer(filePath);
+            } else {
+                reject(new Error('Invalid file path or File object provided.'));
+            }
         });
     }
-
 
 }
 
