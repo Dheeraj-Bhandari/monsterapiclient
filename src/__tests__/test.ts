@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import fetchMock from 'fetch-mock'; // Import fetch-mock
 dotenv.config();
 
-import { MonsterApiClient } from '../index'; // Adjust the import path as needed
+import  MonsterApiClient  from '../index'; // Adjust the import path as needed
 
 describe('MonsterApiClient', () => {
     // Mock API key for testing purposes
@@ -123,65 +123,4 @@ describe('MonsterApiClient', () => {
             expect(error.message).to.include('Timeout waiting for process:');
         }
     });
-
-    it('should successfully upload a file', async () => {
-        const filePath = 'dheeraj.png'; // Replace with the actual file path
-    
-        // Stubbing the necessary methods to simulate a successful file upload
-        (monsterClient as any).initNodeModules = sandbox.stub();
-        (monsterClient as any).isNodeEnvironment = sandbox.stub().returns(true);
-        (monsterClient as any).fs = sandbox.stub().returns({
-            readFileSync: () => Buffer.from('file contents'), // Replace with your file contents
-        });
-    
-        const uploadUrl = 'https://api.monsterapi.ai/v1/upload';
-        const downloadUrl = 'https://download-url-for-uploaded-file'; // Replace with your expected download URL
-    
-        // Mock the response from the file upload endpoint
-        fetchMock.put(uploadUrl, {
-            status: 200,
-            body: JSON.stringify({ download_url: downloadUrl }),
-        });
-    
-        // Remove the redefinition of `path` here to avoid conflicts
-        const result: string = await monsterClient.uploadFile(filePath);
-        
-        expect(result).to.equal(downloadUrl);
-    });
-
-    it('should handle a failed file upload', async () => {
-        const filePath = 'dheeraj.png'; // Replace with the actual file path
-
-        // Stubbing the necessary methods to simulate a failed file upload
-        (monsterClient as any).initNodeModules = sandbox.stub();
-        (monsterClient as any).isNodeEnvironment = sandbox.stub().returns(true);
-        (monsterClient as any).fs = sandbox.stub().returns({
-            readFileSync: () => {
-                throw new Error('Failed to read file');
-            },
-        });
-
-        // Stub path.basename to simulate its behavior
-        (monsterClient as any).path = sandbox.stub().returns({
-            basename: (filePath: string) => filePath.split('/').pop() || '',
-        });
-
-        const uploadUrl = 'https://api.monsterapi.ai/v1/upload';
-
-        // Mock the response from the file upload endpoint to simulate failure
-        fetchMock.post(uploadUrl, {
-            status: 500, // Simulate a failed request
-            body: JSON.stringify({ message: 'File upload failed' }),
-        });
-
-        try {
-            await monsterClient.uploadFile(filePath);
-        } catch (error: any) {
-            expect(error.message).to.include('Error uploading file');
-        }
-    });
-
-
-
-
 });

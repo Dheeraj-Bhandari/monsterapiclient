@@ -52,12 +52,12 @@ yarn add monsterapi
 To use the **monsterapi** library in your project, import the `MonsterApiClient` class:
 
 ```javascript
-import { MonsterApiClient } from 'monsterapi';
+import  MonsterApiClient  from 'monsterapi';
 ```
 or
 
 ```javascript
-const { MonsterApiClient } = require('monsterapi');
+const  MonsterApiClient  = require('monsterapi');
 ```
 ### Initialize the Client
 
@@ -154,20 +154,20 @@ Handle File Upload from you local computer to use `generate` and other method an
 ```javascript
 // Example for genrerating File Link and Using it in Model Object.
 
-const model = 'whisper'; // Replace with a valid model name
+const model = 'img2img'; // Replace with a valid model name
 
-const response = await client.uploadFile(model, selectedFile ) // Put model name selected file in `uploadFile Function`
+const response = await client.uploadFile(selectedFile) // Put  selected file in `uploadFile Function`
 
 const input = {
   // Replace with valid input data for the model
 
  
-  file: response.url // put the response url in place of file url.
+  file: response // put the response url in place of file url.
 };
 
 // Below is Example for Using Function separately 
 
-client.uploadFile(model, file)
+client.uploadFile(file)
   .then((response) => {
     // Handle the response from the API
     console.log('Uploaded file:', response);
