@@ -160,7 +160,7 @@ const response = await client.uploadFile(selectedFile); // Use the 'await' keywo
 
 const input = {
   // Replace with valid input data for the model
-  file: response, // Use the response URL as the 'file' input
+  init_image_url: response, // Use the response URL as the 'file' input
 };
 
 // Make a model request using the input
@@ -191,7 +191,7 @@ const { upload_url, download_url } = uploadResponse;
 // After successful upload, you can use the 'download_url' as an input in your model request
 const input = {
   // Replace with valid input data for the model
-  file: download_url, // Use the 'download_url' as the 'file' input
+  init_image_url: download_url, // Use the 'download_url' as the 'file' input
 };
 
 // Make a model request using the input
