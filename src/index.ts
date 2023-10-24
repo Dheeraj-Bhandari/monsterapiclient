@@ -91,7 +91,7 @@ export default class MonsterApiClient {
         }
     }
 
-    async uploadFile(fileInput: File): Promise<string> {
+    async uploadFile(fileInput: File): Promise<string | any> {
         const getUploadUrlUrl = 'https://api.monsterapi.ai/v1/upload';
         const headers: HeadersInit = {
             accept: 'application/json',
@@ -111,8 +111,17 @@ export default class MonsterApiClient {
             const { upload_url, download_url } = await response.json();
 
             // Read the file as binary data
-            const fileArrayBuffer = await fileInput.arrayBuffer();
+            let fileArrayBuffer;
+            if (typeof fileInput.arrayBuffer === 'function') {
+                fileArrayBuffer = await fileInput.arrayBuffer();
 
+            }
+            else {
+                return {
+                    upload_url, download_url, info: `Seems Like you trying to use uploadFile method in Node Js environment. You Can use upload_url Api in this response directly in Nodejs. For More Details Visit https://developer.monsterapi.ai/reference/get_upload`
+                }
+
+            }
             // Determine the content type of the uploaded file
             const mimeType = fileInput.type; // Use the file's MIME type if available
 
