@@ -3,8 +3,7 @@
 
 # monsterapi
 
-**monsterapi** is a JavaScript client library for interacting with the Monster API. It provides an easy way to access the API's features and integrate them into your applications.
-
+**monsterapi** is a JavaScript client library for adding Generative AI model capabilities in your application using Monster API. With this package you can send generative AI requests for Large language models hosted by MonsterAPI..
 
 
 ### Available Models
@@ -14,10 +13,7 @@
 1. falcon-7b-instruct
 2. mpt-7b-instruct
 3. llama2-7b-chat
-4. falcon-40b-instruct
-5. mpt-30b-instruct
 
-**Note:** Other models are accessible through the client but are not activated yet. They will be updated shortly.
 
 #### Image Generation:
 
@@ -149,36 +145,62 @@ client.generate(model, input)
 
 ### Handle File Upload From Local Device
 
-Handle File Upload from you local computer to use `generate` and other method and retrive the result directly.
+You can use the `uploadFile` method to handle file uploads from your local computer and use them in various model requests.
+
+#### Using `uploadFile` in a Browser Environment (e.g. React, Next.js)
+
+In browser-based environments, such as React or Next.js, you can use the `uploadFile` method as follows:
 
 ```javascript
-// Example for genrerating File Link and Using it in Model Object.
-
 const model = 'img2img'; // Replace with a valid model name
+const selectedFile = // Replace with your local file input
 
-const response = await client.uploadFile(selectedFile) // Put  selected file in `uploadFile Function`
+const response = await client.uploadFile(selectedFile); // Use the 'await' keyword to handle the Promise
 
 const input = {
   // Replace with valid input data for the model
-
- 
-  file: response // put the response url in place of file url.
+  file: response, // Use the response URL as the 'file' input
 };
 
-// Below is Example for Using Function separately 
+// Make a model request using the input
+const generatedResponse = await client.generate(model, input);
 
-client.uploadFile(file)
-  .then((response) => {
-    // Handle the response from the API
-    console.log('Uploaded file:', response);
-  })
-  .catch((error) => {
-    // Handle API errors
-    console.error('Error:', error);
-  });
-  
+// Handle the response from the API
+console.log('Generated content:', generatedResponse);
 
-// Please note that all files uploaded via the uploadFile function are automatically removed from the database for privacy and security purposes.
+
+#### Using `uploadFile` with Node.js
+
+In a Node.js environment, the `uploadFile` method returns an object containing both the `upload_url` and `download_url`. You should perform the upload request directly to the `upload_url` API. Here's an example of how to use the `uploadFile` method in Node.js. For More Details Visit https://developer.monsterapi.ai/reference/get_upload:
+
+
+const model = 'img2img'; // Replace with a valid model name
+const selectedFile = // Replace with your local file input
+
+const uploadResponse = await client.uploadFile(selectedFile); // Use the 'await' keyword to handle the Promise
+
+// The response object contains the 'upload_url' and 'download_url' fields
+const { upload_url, download_url } = uploadResponse;
+
+// Now, you can use the 'upload_url' for direct file upload
+// Perform an HTTP PUT request to 'upload_url' with the file content
+
+// After successful upload, you can use the 'download_url' as an input in your model request
+const input = {
+  // Replace with valid input data for the model
+  file: download_url, // Use the 'download_url' as the 'file' input
+};
+
+// Make a model request using the input
+const generatedResponse = await client.generate(model, input);
+
+// Handle the response from the API
+console.log('Generated content:', generatedResponse);
+
+
+// Please note that all files uploaded via the uploadFile function are automatically removed from the database after 30 Min for privacy and security purposes.
+
+
 
 ```
 
