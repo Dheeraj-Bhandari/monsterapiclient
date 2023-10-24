@@ -168,7 +168,9 @@ const generatedResponse = await client.generate(model, input);
 // Handle the response from the API
 console.log('Generated content:', generatedResponse);
 
+```
 
+```javascript
 #### Using `uploadFile` with Node.js
 
 In a Node.js environment, the `uploadFile` method returns an object containing both the `upload_url` and `download_url`. You should perform the upload request directly to the `upload_url` API. Here's an example of how to use the `uploadFile` method in Node.js. For More Details Visit https://developer.monsterapi.ai/reference/get_upload:
@@ -199,8 +201,6 @@ console.log('Generated content:', generatedResponse);
 
 
 // Please note that all files uploaded via the uploadFile function are automatically removed from the database after 30 Min for privacy and security purposes.
-
-
 
 ```
 
