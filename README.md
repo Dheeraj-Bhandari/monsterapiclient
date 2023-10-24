@@ -57,7 +57,7 @@ import  MonsterApiClient  from 'monsterapi';
 or
 
 ```javascript
-const  MonsterApiClient  = require('monsterapi');
+const { default: MonsterApiClient } = require("monsterapi");
 ```
 ### Initialize the Client
 
