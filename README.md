@@ -62,6 +62,60 @@ const client = new MonsterApiClient("your-api-key");
 
 Replace `'your-api-key'` with your actual Monster API key.
 
+
+---
+
+# New Feature: Synchronous Large Language Model (LLM) API
+
+We're excited to introduce a new feature to the **monsterapi** package: the Synchronous Large Language Model (LLM) API. This addition allows users to directly generate responses from our LLMs in a synchronous manner, streamlining the integration into applications requiring real-time AI-generated text.
+
+## How to Use the Synchronous LLM API
+
+To use the synchronous LLM API, you will utilize the `generateSync` method of the `MonsterApiClient`. This method simplifies the process of sending requests and receiving immediate responses from our LLMs.
+
+### Generate Synchronous Responses
+
+Here's how to generate responses synchronously:
+
+```javascript
+
+const requestData = {
+    messages: [
+        {"role": "user", "content": "How many helicopters can a human eat in one sitting?"},
+        {"role": "system", "content": "You are a friendly chatbot who always responds in the style of a pirate"}
+    ],
+    model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    top_k: 121,
+    top_p: 0.5,
+    temp: 0.65,
+    max_length: 128,
+    repetition_penalty: 1.2,
+    beam_size: 1
+};
+
+client.generateSync(requestData)
+    .then(response => {
+        console.log("Synchronous response:", response);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+```
+
+This method expects a `requestData` object, which includes parameters for `messages`, `model`, and other configuration options detailed in the API documentation. The method returns a promise that resolves with the generated response.
+
+## Supported Models
+
+With the introduction of our synchronous LLM API, you can now access several cutting-edge models for real-time text generation, including:
+
+- **TinyLlama/TinyLlama-1.1B-Chat-v1.0**: A compact, efficient model suitable for applications with limited computational resources.
+- **microsoft/phi-2**: Excels in reasoning and language understanding, setting a new standard for base language models.
+- **HuggingFaceH4/zephyr-7b-beta**: A refined iteration of AI models enhanced for diverse applications.
+- **mistralai/Mistral-7B-Instruct-v0.2**: Improved version fine-tuned for instructive responses.
+
+Each model is designed to meet specific needs, from chat applications to content generation. Explore the capabilities of each model to find the perfect fit for your application.
+
+# Asynchronous Functions (Can also act as Synchronous)
 ### Get Response
 
 You can use the `get_response` method to generate the Process Id of your request:

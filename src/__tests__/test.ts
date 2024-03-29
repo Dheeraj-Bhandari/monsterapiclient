@@ -123,4 +123,50 @@ describe('MonsterApiClient', () => {
             expect(error.message).to.include('Timeout waiting for process:');
         }
     });
+
+    it('should successfully call the generateSync method with valid data', async () => {
+        const inputData = {
+            messages: [
+                {"role": "system", "content": "You are a friendly chatbot who always responds in the style of a pirate"},
+                {"role": "user", "content": "How many helicopters can a human eat in one sitting?"}
+            ],
+            top_k: 121,
+            top_p: 0.5,
+            temp: 0.65,
+            max_length: 128,
+            repetition_penalty: 1.2,
+            beam_size: 1,
+            model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+        };
+    
+        // Expected response mock
+        const expectedResponse = {
+            text: ["The number of helicopters that humans can eat at once..."],
+            token_counts: {
+                input: 59,
+                output: 131
+            },
+            credits_consumed: 3.858337842712844e-05
+        };
+    
+        // Mocking fetch to simulate a successful API call
+        fetchMock.post('https://llm.monsterapi.ai/v1/generate', {
+            body: JSON.stringify({ response: expectedResponse }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+    
+        // Call the method
+        const response = await monsterClient.generateSync(inputData);
+    
+        // Verify the response matches expected output
+        expect(response).to.deep.equal(expectedResponse);
+        // Optionally, verify if the request was made with expected headers and body
+        const lastCall = fetchMock.lastCall('https://llm.monsterapi.ai/v1/generate');
+        const actualHeaders = lastCall[1].headers;
+        const actualBody = JSON.parse(lastCall[1].body);
+    
+        expect(actualHeaders.Authorization).to.exist;
+        expect(actualBody).to.deep.equal(inputData);
+    });
+    
 });
