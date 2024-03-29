@@ -145,4 +145,29 @@ export default class MonsterApiClient {
             throw new Error(`Error uploading file: ${error.message}`);
         }
     }
+
+    async generateSync(data: Record<string, any>): Promise<Record<string, any>> {
+        const url = 'https://llm.monsterapi.ai/v1/generate';
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.apiKey}`,
+        };
+
+        try {
+            const response = await this.fetch(url, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching response: Request failed with status code ${response.status}`);
+            }
+
+            const responseData: any = await response.json();
+            return responseData.response;
+        } catch (error: any) {
+            throw new Error(`Error generating content with LLM: ${error.message}`);
+        }
+    }
 }
